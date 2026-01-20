@@ -101,17 +101,16 @@ func init() {
 }
 
 func findDataDir() string {
-	// Try current directory first
-	if _, err := os.Stat("data"); err == nil {
-		return "data"
+	// Try home directory installation FIRST (where install script puts it)
+	home, err := os.UserHomeDir()
+	if err == nil {
+		dataPath := filepath.Join(home, ".quant-trading-skill", "data")
+		if _, err := os.Stat(dataPath); err == nil {
+			return dataPath
+		}
 	}
 
-	// Try .shared/quant-trading-pro/data
-	if _, err := os.Stat(".shared/quant-trading-pro/data"); err == nil {
-		return ".shared/quant-trading-pro/data"
-	}
-
-	// Try executable directory
+	// Try executable directory (if running from build location)
 	ex, err := os.Executable()
 	if err == nil {
 		exPath := filepath.Dir(ex)
@@ -121,16 +120,18 @@ func findDataDir() string {
 		}
 	}
 
-	// Try home directory installation
-	home, err := os.UserHomeDir()
-	if err == nil {
-		dataPath := filepath.Join(home, ".quant-trading-skill", "data")
-		if _, err := os.Stat(dataPath); err == nil {
-			return dataPath
-		}
+	// Try .shared/quant-trading-pro/data (if already initialized)
+	if _, err := os.Stat(".shared/quant-trading-pro/data"); err == nil {
+		return ".shared/quant-trading-pro/data"
 	}
 
-	return "data"
+	// Try current directory
+	if _, err := os.Stat("data"); err == nil {
+		return "data"
+	}
+
+	// Fallback
+	return filepath.Join(home, ".quant-trading-skill", "data")
 }
 
 func initializeSkill(targetDir, aiName string) error {
