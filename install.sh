@@ -104,10 +104,14 @@ done
 
 # Add to PATH if not already there
 SHELL_RC=""
-if [ -n "$BASH_VERSION" ]; then
+if [[ "$SHELL" == *"zsh"* ]]; then
+    SHELL_RC="$HOME/.zshrc"
+elif [[ "$SHELL" == *"bash"* ]]; then
     SHELL_RC="$HOME/.bashrc"
 elif [ -n "$ZSH_VERSION" ]; then
     SHELL_RC="$HOME/.zshrc"
+elif [ -n "$BASH_VERSION" ]; then
+    SHELL_RC="$HOME/.bashrc"
 fi
 
 if [ -n "$SHELL_RC" ] && ! grep -q "$INSTALL_DIR" "$SHELL_RC" 2>/dev/null; then
