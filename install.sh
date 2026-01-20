@@ -1,15 +1,15 @@
 #!/bin/bash
-# Quant Trading Skill - Installation Script (Go version)
+# QuantPro - Installation Script
 # Usage: curl -fsSL https://raw.githubusercontent.com/0xboji/quant-trading-skill/main/install.sh | bash
 
 set -e
 
 REPO_URL="https://github.com/0xboji/quant-trading-skill"
 INSTALL_DIR="$HOME/.quant-trading-skill"
-BINARY_NAME="qts"
+BINARY_NAME="quantpro"
 
 echo "======================================================================================================"
-echo " Quant Trading Skill - Installer (Go Edition)"
+echo " QuantPro - Professional Quantitative Trading Toolkit"
 echo "======================================================================================================"
 echo ""
 
@@ -34,9 +34,9 @@ echo "✅ Detected: $OS-$ARCH"
 
 # Check if binary already exists
 if command -v $BINARY_NAME &> /dev/null; then
-    CURRENT_VERSION=$($BINARY_NAME --version 2>&1 || echo "unknown")
+    CURRENT_VERSION=$($BINARY_NAME --version 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo "unknown")
     echo ""
-    echo "⚠️  qts is already installed: $CURRENT_VERSION"
+    echo "⚠️  quantpro is already installed (version $CURRENT_VERSION)"
     read -p "   Do you want to reinstall? [y/N] " -n 1 -r
     echo ""
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -55,16 +55,16 @@ echo "📦 Downloading latest release..."
 DOWNLOAD_URL="$REPO_URL/releases/latest/download/${BINARY_NAME}-${OS}-${ARCH}"
 
 if command -v curl &> /dev/null; then
-    curl -fsSL "$DOWNLOAD_URL" -o "$INSTALL_DIR/$BINARY_NAME"
+    curl -fsSL "$DOWNLOAD_URL" -o "$INSTALL_DIR/$BINARY_NAME" 2>/dev/null || BUILD_FROM_SOURCE=1
 elif command -v wget &> /dev/null; then
-    wget -q "$DOWNLOAD_URL" -O "$INSTALL_DIR/$BINARY_NAME"
+    wget -q "$DOWNLOAD_URL" -O "$INSTALL_DIR/$BINARY_NAME" 2>/dev/null || BUILD_FROM_SOURCE=1
 else
     echo "❌ Error: Neither curl nor wget found. Please install one of them."
     exit 1
 fi
 
 # Fallback to git clone if binary not available
-if [ ! -f "$INSTALL_DIR/$BINARY_NAME" ] || [ ! -s "$INSTALL_DIR/$BINARY_NAME" ]; then
+if [ ! -f "$INSTALL_DIR/$BINARY_NAME" ] || [ ! -s "$INSTALL_DIR/$BINARY_NAME" ] || [ "$BUILD_FROM_SOURCE" = "1" ]; then
     echo "📦 Binary not available, building from source..."
     
     # Check for Go
@@ -74,11 +74,16 @@ if [ ! -f "$INSTALL_DIR/$BINARY_NAME" ] || [ ! -s "$INSTALL_DIR/$BINARY_NAME" ];
         exit 1
     fi
     
+    GO_VERSION=$(go version | grep -oE '[0-9]+\.[0-9]+' | head -1)
+    echo "✅ Found Go $GO_VERSION"
+    
     # Clone and build
     TEMP_DIR=$(mktemp -d)
-    git clone --quiet "$REPO_URL" "$TEMP_DIR"
+    echo "📥 Cloning repository..."
+    git clone --quiet --depth 1 "$REPO_URL" "$TEMP_DIR"
     cd "$TEMP_DIR"
-    go build -o "$INSTALL_DIR/$BINARY_NAME" ./cmd/qts
+    echo "🔨 Building binary..."
+    go build -o "$INSTALL_DIR/$BINARY_NAME" ./cmd/quantpro
     cd - > /dev/null
     rm -rf "$TEMP_DIR"
 fi
@@ -92,7 +97,9 @@ DATA_DIR="$INSTALL_DIR/data"
 mkdir -p "$DATA_DIR"
 
 for csv in strategies indicators risk-management data-sources anti-patterns; do
-    curl -fsSL "$REPO_URL/raw/main/data/${csv}.csv" -o "$DATA_DIR/${csv}.csv"
+    curl -fsSL "$REPO_URL/raw/main/data/${csv}.csv" -o "$DATA_DIR/${csv}.csv" 2>/dev/null || \
+    wget -q "$REPO_URL/raw/main/data/${csv}.csv" -O "$DATA_DIR/${csv}.csv" 2>/dev/null || \
+    echo "⚠️  Warning: Could not download ${csv}.csv"
 done
 
 # Add to PATH if not already there
@@ -105,7 +112,7 @@ fi
 
 if [ -n "$SHELL_RC" ] && ! grep -q "$INSTALL_DIR" "$SHELL_RC" 2>/dev/null; then
     echo "" >> "$SHELL_RC"
-    echo "# Quant Trading Skill" >> "$SHELL_RC"
+    echo "# QuantPro" >> "$SHELL_RC"
     echo "export PATH=\"\$PATH:$INSTALL_DIR\"" >> "$SHELL_RC"
     echo "✅ Added to PATH in $SHELL_RC"
 fi
@@ -125,17 +132,21 @@ echo ""
 echo "Quick Start:"
 echo "------------"
 echo ""
-echo "# Search strategies (auto-detect domain)"
-echo "$BINARY_NAME \"order flow crypto\""
+echo "# Initialize in your project"
+echo "cd /path/to/your/project"
+echo "$BINARY_NAME init --ai antigravity"
 echo ""
-echo "# Search specific domain"
-echo "$BINARY_NAME \"stop loss\" -d risk"
+echo "# This will create:"
+echo "#   .agent/workflows/use-quant-skill.md"
+echo "#   .shared/quant-trading-pro/data/ (5 CSV files)"
 echo ""
-echo "# Get more results"
-echo "$BINARY_NAME \"rsi bollinger\" -d indicator -n 5"
+echo "# Search knowledge base"
+echo "$BINARY_NAME search \"order flow crypto\""
+echo "$BINARY_NAME search \"stop loss\" -d risk"
+echo "$BINARY_NAME search \"rsi bollinger\" -d indicator -n 5"
 echo ""
 echo "Available domains: strategy, indicator, risk, data, anti-pattern"
 echo ""
-echo "Restart your shell or run: source $SHELL_RC"
+echo "⚠️  Restart your shell or run: source $SHELL_RC"
 echo ""
 echo "======================================================================================================"

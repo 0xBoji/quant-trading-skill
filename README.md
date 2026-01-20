@@ -1,12 +1,12 @@
-# Quant Trading Skill
+# QuantPro
 
-> High-performance quantitative trading knowledge base with BM25 search - written in Go
+> Professional quantitative trading toolkit with intelligent knowledge base
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/badge/go-1.21+-blue.svg)](https://go.dev/dl/)
 [![Knowledge Base](https://img.shields.io/badge/entries-122-green.svg)](./data/)
 
-A blazing-fast CLI tool providing instant access to curated quantitative trading knowledge: strategies, indicators, risk management, data sources, and common pitfalls.
+A blazing-fast CLI tool for quantitative trading research. Search strategies, indicators, risk management techniques, and avoid common pitfalls with intelligent BM25 search.
 
 ## 🚀 Quick Start
 
@@ -16,153 +16,169 @@ A blazing-fast CLI tool providing instant access to curated quantitative trading
 curl -fsSL https://raw.githubusercontent.com/0xboji/quant-trading-skill/main/install.sh | bash
 ```
 
-### Manual Build
+### Initialize in Your Project
 
 ```bash
-git clone https://github.com/0xboji/quant-trading-skill.git
-cd quant-trading-skill
-go build -o qts ./cmd/qts
-./qts "order flow crypto"
+cd /path/to/your/quant-project
+quantpro init --ai antigravity
 ```
 
-### Basic Usage
+This creates:
+```
+.agent/
+└── workflows/
+    └── use-quant-skill.md
+.shared/
+└── quant-trading-pro/
+    ├── data/           # 5 CSV files (122 entries)
+    └── SKILL.md       # Documentation
+```
+
+### Search Knowledge Base
 
 ```bash
 # Auto-detect domain
-qts "order flow imbalance crypto"
+quantpro search "order flow crypto"
 
 # Search specific domain
-qts "stop loss kelly" -d risk
+quantpro search "stop loss kelly" -d risk
 
 # Get more results
-qts "rsi bollinger moving average" -d indicator -n 5
-
-# Available domains: strategy, indicator, risk, data, anti-pattern
+quantpro search "rsi bollinger" -d indicator -n 5
 ```
 
 ## 📊 Knowledge Base
 
 | Domain | Entries | Description |
 |--------|---------|-------------|
-| **Strategies** | 24 | HFT to long-term: OFI, Hawkes, Kalman, Pairs, Market Making, ML/RL |
-| **Indicators** | 23 | Technical indicators: EMA, RSI, MACD, ATR, Volume Profile, TCI |
-| **Risk Management** | 24 | Position sizing, stops, VaR, Kelly, hedging, circuit breakers |
-| **Data Sources** | 24 | Tick data, order books, options, on-chain, news, costs |
-| **Anti-Patterns** | 27 | Common mistakes: overfitting, look-ahead bias, slippage |
+| **strategies** | 24 | HFT to long-term: OFI, Hawkes, Kalman, Pairs, Market Making, ML/RL |
+| **indicators** | 23 | Technical indicators: EMA, RSI, MACD, ATR, Volume Profile, TCI |
+| **risk** | 24 | Position sizing, stops, VaR, Kelly, hedging, circuit breakers |
+| **data** | 24 | Tick data, order books, options, on-chain, news, costs |
+| **anti-pattern** | 27 | Common mistakes: overfitting, look-ahead bias, slippage |
 | **TOTAL** | **122** | Curated quant trading knowledge |
 
 ## 🎯 Features
 
-- **⚡ Blazing Fast**: Go implementation, <1ms search on 122 entries
+- **⚡ Blazing Fast**: <1ms search on 122 entries (Go native)
 - **🔍 BM25 Search**: Industry-standard TF-IDF ranking
-- **🤖 Auto-Detection**: Intelligently routes queries to best domain
-- **🎨 Colored Output**: Beautiful terminal formatting
-- **📦 Zero Config**: Single binary, works out of the box
+- **🤖 Auto-Detection**: Intelligent domain routing
+- **🎨 Beautiful CLI**: Colored output, formatted results
+- **📦 Easy Setup**: `init` command creates project structure
 - **🚀 Cross-Platform**: Linux, macOS, Windows (amd64, arm64)
 
-## 📖 Examples
+## 📖 Usage
+
+### Initialize Project
+
+```bash
+# Create .agent and .shared directories with skill
+quantpro init --ai antigravity
+
+# Custom target directory
+quantpro init --ai custom-agent --dir /path/to/project
+```
+
+### Search Commands
+
+```bash
+# Basic search (auto-detect domain)
+quantpro search "mean reversion crypto"
+
+# Domain-specific search
+quantpro search "exponential moving average" -d indicator
+
+# Get more results
+quantpro search "position sizing" -d risk -n 5
+
+# Custom data directory
+quantpro search "query" --data-dir /path/to/data
+```
+
+### Available Domains
+
+- `strategy` - Trading strategies (OFI, Hawkes, Pairs, Market Making, etc.)
+- `indicator` - Technical indicators (EMA, RSI, MACD, ATR, etc.)
+- `risk` - Risk management (Kelly, VaR, Position Sizing, Stops, etc.)
+- `data` - Data sources (Tick data, Order books, Options, etc.)
+- `anti-pattern` - Common mistakes to avoid
+
+## 💡 Examples
 
 ### Search Strategies
 
 ```bash
-$ qts "mean reversion crypto" -d strategy
+$ quantpro search "high frequency order flow" -d strategy
 
 ====================================================================================================
-QUERY: mean reversion crypto
+QUERY: high frequency order flow
 ====================================================================================================
 
 Domain: strategy
-Found 2 results:
+Found 3 results:
 
-1. Statistical Arbitrage (Pairs)
-   Category: Mean Reversion
-   Time Horizon: Medium-term (hours-days)
+1. Order Flow Imbalance (OFI)
+   Category: Microstructure
+   Time Horizon: Intraday (1ms-60s)
    Complexity: Medium
-   Best For: Correlated assets, market-neutral strategies, hedged exposure
+   Best For: High-frequency futures, liquid crypto pairs, institutional execution
 
-2. Mean Reversion (RSI/Bollinger)
-   Category: Oscillator
-   Time Horizon: Short-medium (minutes-hours-days)
-   Complexity: Low
-   Best For: Range-bound markets, high-volatility instruments, short-term reversals
-```
-
-### Search Indicators
-
-```bash
-$ qts "exponential moving average" -d indicator -n 2
-
-====================================================================================================
-QUERY: exponential moving average
-====================================================================================================
-
-Domain: indicator
-Found 2 results:
-
-1. EMA (Exponential Moving Average)
-   Category: Trend
-   Formula/Description: EMA_t = α·Price_t + (1-α)·EMA_{t-1}, α = 2/(N+1)
-   Parameters: Period N (12, 26, 50, 200), α (smoothing factor)
-   Best For: Trend detection, crossovers, smoothing price series
-
-2. MACD (Moving Average Convergence Divergence)
-   Category: Momentum Trend
-   Formula/Description: MACD = EMA(12) - EMA(26), Signal = EMA(9) of MACD
-   Parameters: Fast (12), Slow (26), Signal (9)
+2. Dual-Scale Hawkes Process
+   Category: Point Process
+   Time Horizon: Ultra-short (100ms-10s)
+   Complexity: High
+   Best For: Detecting sweeps, momentum ignition, liquidity crises
 ```
 
 ### Check for Mistakes
 
 ```bash
-$ qts "backtesting overfitting" -d anti-pattern
+$ quantpro search "backtesting overfitting" -d anti-pattern
 
 ====================================================================================================
 QUERY: backtesting overfitting
 ====================================================================================================
 
 Domain: anti-pattern
-Found 3 results:
+Found 2 results:
 
-1. ⚠️  Overfitting on In-Sample Data
+1. Overfitting on In-Sample Data
    Category: Strategy Design
    Severity: CRITICAL
    Don't: Optimize 10+ parameters, test only in-sample, maximize historical Sharpe
    Do: Use walk-forward analysis, out-of-sample testing, limit parameters (<5)
-
-2. ⚠️  Look-Ahead Bias
-   Category: Strategy Design
-   Severity: CRITICAL
-   Don't: Use 'close' prices before they're known, reindex data without timestamps
-   Do: Ensure all signals use only data available at signal time, timestamp everything
 ```
 
-## 🏗️ Architecture
+## 🏗️ Project Structure
 
 ```
 quant-trading-skill/
 ├── cmd/
-│   └── qts/                # CLI application
-│       └── main.go         # Cobra CLI with colored output
+│   └── quantpro/           # CLI application
+│       └── main.go         # Cobra CLI + init command
 ├── internal/
-│   ├── bm25/              # BM25 ranking algorithm
-│   │   └── bm25.go        # Core search engine
+│   ├── bm25/              # BM25 algorithm
+│   │   └── bm25.go
 │   └── search/            # Search logic
-│       └── search.go      # Domain detection, CSV loading
+│       └── search.go
 ├── data/                  # Knowledge base (122 entries)
 │   ├── strategies.csv
 │   ├── indicators.csv
 │   ├── risk-management.csv
 │   ├── data-sources.csv
 │   └── anti-patterns.csv
-├── go.mod                 # Go dependencies
-└── README.md              # This file
+├── .github/workflows/     # CI/CD
+│   └── build.yml          # Automated builds
+├── go.mod
+├── install.sh             # One-line installer
+└── README.md
 ```
 
 ## 🔧 Build from Source
 
 ### Prerequisites
 
-- Go 1.21 or later
+- Go 1.21+
 - Git
 
 ### Build
@@ -170,98 +186,90 @@ quant-trading-skill/
 ```bash
 git clone https://github.com/0xboji/quant-trading-skill.git
 cd quant-trading-skill
-go mod download
-go build -o qts ./cmd/qts
-```
-
-### Run Tests
-
-```bash
-go test -v ./...
+go build -o quantpro ./cmd/quantpro
+./quantpro --version
 ```
 
 ### Cross-Compile
 
 ```bash
 # Linux amd64
-GOOS=linux GOARCH=amd64 go build -o qts-linux-amd64 ./cmd/qts
+GOOS=linux GOARCH=amd64 go build -o quantpro-linux-amd64 ./cmd/quantpro
 
 # macOS arm64 (M1/M2)
-GOOS=darwin GOARCH=arm64 go build -o qts-darwin-arm64 ./cmd/qts
+GOOS=darwin GOARCH=arm64 go build -o quantpro-darwin-arm64 ./cmd/quantpro
 
-# Windows amd64
-GOOS=windows GOARCH=amd64 go build -o qts-windows-amd64.exe ./cmd/qts
+# Windows
+GOOS=windows GOARCH=amd64 go build -o quantpro-windows-amd64.exe ./cmd/quantpro
 ```
 
-## 🚀 Advanced Usage
+## 🚀 Integration
 
-### Environment Variables
-
-```bash
-# Custom data directory
-export QTS_DATA_DIR="/path/to/data"
-qts "query"
-
-# Use --data-dir flag
-qts "query" --data-dir /custom/path/data
-```
-
-### Integration with Go Projects
+### As Go Package
 
 ```go
-import (
-    "github.com/0xboji/quant-trading-skill/internal/search"
-)
+import "github.com/0xboji/quant-trading-skill/internal/search"
 
-func main() {
-    result, err := search.Search("./data", "order flow crypto", "", 3)
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    for _, r := range result.Results {
-        fmt.Printf("%s: %s\n", r["Strategy Name"], r["Best For"])
-    }
+result, err := search.Search("./data", "order flow crypto", "", 3)
+if err != nil {
+    log.Fatal(err)
+}
+
+for _, r := range result.Results {
+    fmt.Printf("%s: %s\n", r["Strategy Name"], r["Best For"])
 }
 ```
 
-## 🎓 Use Cases
+### In Your Project
 
-- **Strategy Research**: Find strategies matching your market/capital/experience
-- **Technical Analysis**: Discover compatible indicators for signal generation
-- **Risk Planning**: Identify required risk controls before deployment
-- **Data Validation**: Verify you can access necessary data sources
-- **Error Prevention**: Check for common pitfalls specific to your strategy type
-- **Education**: Learn microstructure, market making, execution algorithms
+After running `quantpro init --ai antigravity`:
+
+```bash
+# Data available at
+.shared/quant-trading-pro/data/*.csv
+
+# Workflow documentation at
+.agent/workflows/use-quant-skill.md
+
+# Full documentation at
+.shared/quant-trading-pro/SKILL.md
+```
 
 ## 📊 Performance
 
-- **Search Speed**: <1ms (Go native, BM25 algorithm)
-- **Memory**: ~5MB RAM (includes loaded CSVs)
-- **Binary Size**: ~8MB (statically compiled)
-- **Startup Time**: <10ms (instant CLI)
+- **Search Speed**: <1ms (Go native, BM25)
+- **Memory**: ~5MB RAM
+- **Binary Size**: ~8MB (static compilation)
+- **Startup**: <10ms
+
+## 🎓 Use Cases
+
+- **Strategy Research**: Find strategies for your market/capital
+- **Technical Analysis**: Discover compatible indicators
+- **Risk Planning**: Identify required controls
+- **Data Validation**: Verify data source access
+- **Error Prevention**: Check for common pitfalls
+- **Education**: Learn microstructure and HFT
 
 ## 🤝 Contributing
 
-Contributions welcome! To add knowledge:
+Contributions welcome!
 
-1. **Add entries**: Edit CSV files in `data/`
-2. **Update keywords**: Ensure searchability
-3. **Test**: Run `qts "your query"`
-4. **Submit PR**: With description of additions
+1. Add entries to CSV files in `data/`
+2. Update keywords for searchability
+3. Test: `quantpro search "your query"`
+4. Submit PR
 
 ## 📜 License
 
-MIT License - see LICENSE file
-
-Knowledge base: Curated from public domain trading knowledge
+MIT License - See LICENSE file
 
 ## 🙏 Credits
 
-Inspired by:
-- Market microstructure literature (Hautsch, Hasbrouck, Cartea)
-- Production HFT systems (GO-Microstructures project)
-- Risk management frameworks
+Knowledge base inspired by:
+- Market microstructure literature
+- Production HFT systems
+- Risk management frameworks  
 - Practical trading experience
 
 Built with:
@@ -272,7 +280,6 @@ Built with:
 
 **Author**: 0xboji  
 **Repository**: [github.com/0xboji/quant-trading-skill](https://github.com/0xboji/quant-trading-skill)  
-**Version**: 1.0.0  
-**Last Updated**: 2026-01-20
+**Version**: 1.0.0
 
 ⭐ Star this repo if you find it useful!
